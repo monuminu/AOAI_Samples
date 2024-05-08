@@ -1,0 +1,14 @@
+$schema: https://azuremlschemas.azureedge.net/latest/environment.schema.json
+name: streaming-env # environment name
+version: 1
+image: hkotesova/streaming:latest # Your built image name here
+inference_config:
+  liveness_route:
+    port: 5001
+    path: /health
+  readiness_route:
+    port: 5001
+    path: /health
+  scoring_route:
+    port: 5001
+    path: /score

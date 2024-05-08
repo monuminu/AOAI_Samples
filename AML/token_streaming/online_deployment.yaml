@@ -1,0 +1,20 @@
+$schema: https://azuremlschemas.azureedge.net/latest/managedOnlineDeployment.schema.json
+name: streaming-deployment # deployment name
+endpoint_name: streaming-endpoint # endpoint name
+model: azureml://registries/azureml-meta/models/Llama-2-7b-chat/versions/15
+instance_type: Standard_NC12s_v3 # V100 SKUs also work here
+instance_count: 1
+environment: azureml:streaming-env:1 # environment name
+request_settings:
+   request_timeout_ms: 60000
+   max_queue_wait_ms: 5000
+liveness_probe:
+  initial_delay: 1500
+  period: 90
+  timeout: 60
+  failure_threshold: 120
+readiness_probe:
+  initial_delay: 1500
+  period: 90
+  timeout: 30
+  failure_threshold: 120
