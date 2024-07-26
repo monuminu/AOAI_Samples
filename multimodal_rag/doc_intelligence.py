@@ -18,8 +18,8 @@ from mimetypes import guess_type
 from openai import AzureOpenAI
 aoai_api_base = os.getenv("AZURE_OPENAI_ENDPOINT")
 aoai_api_key= os.getenv("AZURE_OPENAI_API_KEY")
-aoai_deployment_name = 'gpt-4-1106-preview' # your model deployment name for GPT-4V
-aoai_api_version = '2024-03-01-preview' # this might change in the future
+aoai_deployment_name = os.getenv("AZURE_OPENAI_DEPLOYMENT_NAME")
+aoai_api_version = '2024-06-01'
 
 # Function to encode a local image into data URL 
 def local_image_to_data_url(image_path):
