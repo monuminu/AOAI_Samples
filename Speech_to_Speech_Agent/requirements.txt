@@ -1,1 +1,3 @@
 azure-cognitiveservices-speech
+openai
+python-dotenv
