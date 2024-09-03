@@ -43,7 +43,7 @@ The following files are also included in the repository:
 1. Create an .env file and update the following environment variables:
 
     ```
-    AZURE_OPENAI_API_KEY=d49e7825c734484b86c6803d4452ce68 
+    AZURE_OPENAI_API_KEY=XXXX 
     # replace with your Azure OpenAI API Key
 
     AZURE_OPENAI_ENDPOINT=https://pineconellmdemoopenai.openai.azure.com/ 
@@ -55,7 +55,7 @@ The following files are also included in the repository:
     AZURE_OPENAI_CHAT_DEPLOYMENT_VERSION=2023-07-01-preview 
     #You don't need to change this unless you are willing to try other versions.
 
-    PINECONE_API_KEY=a592424f-ba4e-4c66-a0d2-deda1dcd1de9 
+    PINECONE_API_KEY=XXXX 
     #Change this to your Pinecone API Key
 
     AZURE_OPENAI_ADA_EMBEDDING_DEPLOYMENT_NAME=text-embedding-ada-002 
