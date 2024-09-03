@@ -1,0 +1,31 @@
+name: dreambooth-flux-env
+channels:
+  - conda-forge
+dependencies:
+  - python=3.10
+  - pip:
+      - 'git+https://github.com/huggingface/diffusers.git'
+      - transformers>=4.41.2
+      - azureml-acft-accelerator==0.0.59
+      - azureml_acft_common_components==0.0.59
+      - azureml-acft-contrib-hf-nlp==0.0.59
+      - azureml-evaluate-mlflow==0.0.59
+      - azureml-metrics[text]==0.0.59
+      - mltable==1.6.1
+      - mpi4py==3.1.5
+      - sentencepiece==0.1.99
+      - transformers==4.44.0
+      - datasets==2.17.1
+      - optimum==1.17.1
+      - accelerate>=0.31.0
+      - onnxruntime==1.17.3
+      - rouge-score==0.1.2
+      - sacrebleu==2.4.0
+      - bitsandbytes==0.43.3
+      - einops==0.7.0
+      - aiohttp==3.10.5
+      - peft==0.8.2
+      - deepspeed==0.15.0
+      - trl==0.8.1
+      - tiktoken==0.6.0
+      - scipy==1.14.0
