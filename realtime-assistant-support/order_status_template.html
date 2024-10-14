@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Status</title>
+    <style>
+        body {{
+            font-family: Arial, sans-serif;
+            background-color: #f0f8ff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }}
+        .order-card {{
+            background-color: #ffffff;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            width: 300px;
+        }}
+        h1 {{
+            color: #4a90e2;
+            text-align: center;
+        }}
+        .info {{
+            margin: 10px 0;
+        }}
+        .label {{
+            font-weight: bold;
+            color: #333;
+        }}
+        .value {{
+            color: #4a90e2;
+        }}
+        .status {{
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: #ffffff;
+            background-color: #2ecc71;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }}
+    </style>
+</head>
+<body>
+    <div class="order-card">
+        <h1>Order Status</h1>
+        <div class="info">
+            <span class="label">Order ID:</span>
+            <span class="value">{order_id}</span>
+        </div>
+        <div class="info">
+            <span class="label">Customer ID:</span>
+            <span class="value">{customer_id}</span>
+        </div>
+        <div class="info">
+            <span class="label">Order Date:</span>
+            <span class="value">{order_date}</span>
+        </div>
+        <div class="info">
+            <span class="label">Expected Arrival:</span>
+            <span class="value">{estimated_delivery}</span>
+        </div>
+        <div class="status">
+            {status}
+        </div>
+    </div>
+</body>
+</html>
