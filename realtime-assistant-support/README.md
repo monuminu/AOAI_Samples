@@ -34,7 +34,6 @@ The following files are also included in the repository:
 - [Docker](https://www.docker.com/) installed on your local machine.
 - [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli) installed on your local machine.
 - [Azure OpenAI account](https://azure.microsoft.com/en-us/services/cognitive-services/openai/). You will need to create a resource and obtain your OpenAI Endpoint, API Key, deploy text-embedding-ada-002 and gpt-35-turbo-16k model.
-- Pdf document to be uploaded in the folder `pdfs`. This document will be indexed and used for question answering.
 - Python 3.11 or higher installed on your local machine.
 - (Optional) [Azure Container Registry](https://docs.microsoft.com/en-us/azure/container-registry/) to store the Docker image. This step is optional, if you want to deploy the application to Azure Container Apps for example.
 
@@ -67,14 +66,12 @@ Open the terminal and navigate to the src folder of the repository. Then run the
     pip install -r requirements.txt
     ```
 
-2. Process pdf files: In the folder 'pdfs', place the pdf document that you want to use for answering questions.
-
-3. Run the application: Run the following command to start the application:
+2. Run the application: Run the following command to start the application:
 
     ```chainlit
      chainlit run app.py -w
     ```
-4. Test the application: Open a new terminal and run the following command to test the application:
+3. Test the application: Open a new terminal and run the following command to test the application:
 
     ```chainlit
      http://localhost:8000/
