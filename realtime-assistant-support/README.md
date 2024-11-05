@@ -45,7 +45,7 @@ The following files are also included in the repository:
         AZURE_OPENAI_API_KEY=XXXX
         # replace with your Azure OpenAI API Key
 
-        AZURE_OPENAI_ENDPOINT=https://xxxx.openai.azure.com/
+        AZURE_OPENAI_ENDPOINT=wss://xxxx.openai.azure.com/
         # replace with your Azure OpenAI Endpoint
 
         AZURE_OPENAI_DEPLOYMENT=gpt-4o-realtime-preview
