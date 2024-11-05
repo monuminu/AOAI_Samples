@@ -18,6 +18,7 @@ async def setup_openai_realtime(system_prompt: str):
     """Instantiate and configure the OpenAI Realtime Client"""
     openai_realtime = RealtimeClient(system_prompt = system_prompt)
     cl.user_session.set("track_id", str(uuid4()))
+    
     async def handle_conversation_updated(event):
         item = event.get("item")
         delta = event.get("delta")
@@ -27,22 +28,32 @@ async def setup_openai_realtime(system_prompt: str):
             if 'audio' in delta:
                 audio = delta['audio']  # Int16Array, audio added
                 await cl.context.emitter.send_audio_chunk(cl.OutputAudioChunk(mimeType="pcm16", data=audio, track=cl.user_session.get("track_id")))
-            if 'transcript' in delta:
-                transcript = delta['transcript']  # string, transcript added
-                print(transcript)
+                
             if 'arguments' in delta:
                 arguments = delta['arguments']  # string, function arguments added
                 pass
             
     async def handle_item_completed(item):
-        """Used to populate the chat context with transcription once an item is completed."""
-        # print(item) # TODO
-        pass
+        """Generate the transcript once an item is completed and populate the chat context."""
+        try:
+            transcript = item['item']['formatted']['transcript']
+            if transcript != "":
+                await cl.Message(content=transcript).send()
+        except:
+            pass
     
     async def handle_conversation_interrupt(event):
         """Used to cancel the client previous audio playback."""
         cl.user_session.set("track_id", str(uuid4()))
         await cl.context.emitter.send_audio_interrupt()
+        
+    async def handle_input_audio_transcription_completed(event):
+        item = event.get("item")
+        delta = event.get("delta")
+        if 'transcript' in delta:
+            transcript = delta['transcript']
+            if transcript != "":
+                await cl.Message(author="You", type="user_message", content=transcript).send()
         
     async def handle_error(event):
         logger.error(event)
@@ -51,6 +62,7 @@ async def setup_openai_realtime(system_prompt: str):
     openai_realtime.on('conversation.updated', handle_conversation_updated)
     openai_realtime.on('conversation.item.completed', handle_item_completed)
     openai_realtime.on('conversation.interrupted', handle_conversation_interrupt)
+    openai_realtime.on('conversation.item.input_audio_transcription.completed', handle_input_audio_transcription_completed)
     openai_realtime.on('error', handle_error)
 
     cl.user_session.set("openai_realtime", openai_realtime)
@@ -80,7 +92,7 @@ Provide a clear and concise paragraph addressing the customer's inquiry, includi
 
 # Notes
 - Greet user with Welcome to ShopMe For the first time only
-- always speak in Hindi
+- always speak in Hindi and female voice
 - Ensure all customer data is handled according to relevant privacy and data protection laws and ShopMe's privacy policy.
 - In cases of high sensitivity or complexity, escalate the issue to a human customer support agent.
 - Keep responses within a reasonable length to ensure they are easy to read and understand."""

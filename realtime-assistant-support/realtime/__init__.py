@@ -438,6 +438,8 @@ class RealtimeClient(RealtimeEventHandler):
 
     def _process_event(self, event, *args):
         item, delta = self.conversation.process_event(event, *args)
+        if event["type"] == "conversation.item.input_audio_transcription.completed":
+            self.dispatch("conversation.item.input_audio_transcription.completed", {"item": item, "delta": delta})
         if item:
             self.dispatch("conversation.updated", {"item": item, "delta": delta})
         return item, delta
