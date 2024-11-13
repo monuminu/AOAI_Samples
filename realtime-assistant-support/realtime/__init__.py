@@ -104,13 +104,10 @@ class RealtimeAPI(RealtimeEventHandler):
     def log(self, *args):
         logger.debug(f"[Websocket/{datetime.utcnow().isoformat()}]", *args)
 
-    async def connect(self, model='gpt-4o-realtime-preview'):
+    async def connect(self):
         if self.is_connected():
             raise Exception("Already connected")
-        self.ws = await websockets.connect(f"{self.url}/openai/realtime?api-version={self.api_version}&deployment={model}&api-key={self.api_key}", extra_headers={
-            'Authorization': f'Bearer {self.api_key}',
-            'OpenAI-Beta': 'realtime=v1'
-        })
+        self.ws = await websockets.connect(f"{self.url}/openai/realtime?api-version={self.api_version}&deployment={self.azure_deployment}&api-key={self.api_key}")
         self.log(f"Connected to {self.url}")
         asyncio.create_task(self._receive_messages())
 
