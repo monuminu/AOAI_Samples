@@ -1,0 +1,5 @@
+chainlit
+python-dotenv
+openai
+mcp
+aiohttp
