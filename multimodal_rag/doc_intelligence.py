@@ -160,7 +160,7 @@ def update_figure_description(md_content, img_description, idx):
     """
 
     # The substring you're looking for
-    start_substring = f"![](figures/{idx})"
+    start_substring = "<figure>"
     end_substring = "</figure>"
     new_string = f"<!-- FigureContent=\"{img_description}\" -->"
     
