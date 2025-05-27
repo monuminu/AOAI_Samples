@@ -1,7 +1,7 @@
 Title: Realtime Assistant
 Tags: [multimodal, audio]
 
-# From Zero to Hero: Building Your First Voice Bot with GPT-4o Real-Time API using Python
+# From Zero to Hero: Building Your First Voice Bot with Voice Live API using Python
 
 Voice technology is transforming how we interact with machines, making conversations with AI feel more natural than ever before. With the public beta release of the Realtime API powered by GPT-4o, developers now have the tools to create low-latency, multimodal voice experiences in their apps, opening up endless possibilities for innovation.
 
