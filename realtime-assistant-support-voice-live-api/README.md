@@ -14,7 +14,7 @@ Gone are the days when building a voice bot required stitching together multiple
 - **Tool calling**: Ask the assistant to perform tasks and see their output in the UI
 - **Visual Presence**: Visual cues indicating if the assistant is listening or speaking
 
-Plead read my Blog for more details https://techcommunity.microsoft.com/t5/ai-azure-ai-services-blog/from-zero-to-hero-building-your-first-voice-bot-with-gpt-4o-real/ba-p/4269038
+Plead read my Blog for more details https://techcommunity.microsoft.com/blog/azure-ai-services-blog/from-zero-to-hero-build-your-first-voice-agent-with-voice-live-api/4417715
 
 
 The following files are also included in the repository:
@@ -42,16 +42,15 @@ The following files are also included in the repository:
 1. Create an .env file and update the following environment variables:
 
     ```
-        AZURE_OPENAI_API_KEY=XXXX
+        AZURE_VOICE_LIVE_API_KEY=XXXX
         # replace with your Azure OpenAI API Key
 
-        AZURE_OPENAI_ENDPOINT=wss://xxxx.openai.azure.com/
-        # replace with your Azure OpenAI Endpoint
+        AZURE_VOICE_LIVE_ENDPOINT=wss://xxxx.cognitiveservices.azure.com
+        # replace with your Endpoint
 
-        AZURE_OPENAI_DEPLOYMENT=gpt-4o-realtime-preview
-        #Create a deployment for the gpt-4o-realtime-preview model and place the deployment name here. You can name the deployment as per your choice and put the name here.
-
-        AZURE_OPENAI_CHAT_DEPLOYMENT_VERSION=2024-10-01-preview
+        # If need cascaded use this
+        AZURE_OPENAI_DEPLOYMENT=gpt-4o
+        
         #You don't need to change this unless you are willing to try other versions.
     ```
 
