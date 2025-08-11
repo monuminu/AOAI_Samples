@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Azure AI Agents Playground</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/github.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <style>
+        .event-stream {
+            height: 300px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: #3b82f6 #f1f5f9;
+        }
+        
+        .event-stream::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .event-stream::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        
+        .event-stream::-webkit-scrollbar-thumb {
+            background-color: #3b82f6;
+            border-radius: 4px;
+        }
+        
+        .typewriter {
+            border-right: 3px solid;
+            white-space: nowrap;
+            overflow: hidden;
+            animation: typing 2s steps(40, end), blink-caret .75s step-end infinite;
+        }
+        
+        @keyframes typing {
+            from { width: 0 }
+            to { width: 100% }
+        }
+        
+        @keyframes blink-caret {
+            from, to { border-color: transparent }
+            50% { border-color: #3b82f6; }
+        }
+        
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 200px;
+            background-color: #1e293b;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -100px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+        
+        .citation-bubble {
+            background-color: #e0f2fe;
+            border-radius: 12px;
+            padding: 8px 12px;
+            margin: 4px 0;
+            display: inline-block;
+            max-width: 100%;
+            word-break: break-word;
+        }
+
+        /* Markdown styling */
+        #agent-response h1, #agent-response h2, #agent-response h3 {
+            margin-top: 1.5em;
+            margin-bottom: 0.5em;
+            font-weight: 600;
+        }
+        #agent-response h1 { font-size: 1.8em; border-bottom: 1px solid #e5e7eb; padding-bottom: 0.3em; }
+        #agent-response h2 { font-size: 1.5em; }
+        #agent-response h3 { font-size: 1.25em; }
+        #agent-response p { margin-bottom: 1em; line-height: 1.6; }
+        #agent-response a { color: #3b82f6; text-decoration: underline; }
+        #agent-response ul, #agent-response ol { margin-bottom: 1em; padding-left: 2em; }
+        #agent-response li { margin-bottom: 0.5em; }
+        #agent-response blockquote {
+            border-left: 4px solid #e5e7eb;
+            padding-left: 1em;
+            color: #6b7280;
+            margin-left: 0;
+            margin-right: 0;
+        }
+        #agent-response code {
+            background-color: #f3f4f6;
+            padding: 0.2em 0.4em;
+            border-radius: 0.25em;
+            font-family: monospace;
+        }
+        #agent-response pre {
+            background-color: #f3f4f6;
+            padding: 1em;
+            border-radius: 0.5em;
+            overflow-x: auto;
+            margin-bottom: 1em;
+        }
+        #agent-response table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-bottom: 1em;
+        }
+        #agent-response th, #agent-response td {
+            border: 1px solid #e5e7eb;
+            padding: 0.5em 1em;
+            text-align: left;
+        }
+        #agent-response th {
+            background-color: #f3f4f6;
+            font-weight: 600;
+        }
+        
+        .loading-dots:after {
+            content: '.';
+            animation: dots 1.5s steps(5, end) infinite;
+        }
+        
+        @keyframes dots {
+            0%, 20% {
+                color: rgba(0,0,0,0);
+                text-shadow: .25em 0 0 rgba(0,0,0,0), .5em 0 0 rgba(0,0,0,0);
+            }
+            40% {
+                color: #3b82f6;
+                text-shadow: .25em 0 0 rgba(0,0,0,0), .5em 0 0 rgba(0,0,0,0);
+            }
+            60% {
+                text-shadow: .25em 0 0 #3b82f6, .5em 0 0 rgba(0,0,0,0);
+            }
+            80%, 100% {
+                text-shadow: .25em 0 0 #3b82f6, .5em 0 0 #3b82f6;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Header -->
+        <header class="mb-8">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="flex items-center mb-4 md:mb-0">
+                    <i class="fas fa-robot text-blue-500 text-4xl mr-4"></i>
+                    <div>
+                        <h1 class="text-3xl font-bold text-gray-800">Azure AI Agents Playground</h1>
+                        <p class="text-gray-600">Interactive demo for browser automation agents</p>
+                    </div>
+                </div>
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm text-blue-800">
+                    <i class="fas fa-info-circle mr-2"></i>
+                    <span>Connected to Azure AI Agents API</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Left Panel - Controls -->
+            <div class="lg:col-span-1 bg-white rounded-xl shadow-md p-6">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">Agent Configuration</h2>
+                
+                <div class="mb-6">
+                    <label class="block text-gray-700 text-sm font-medium mb-2" for="agent-name">
+                        Agent Name
+                    </label>
+                    <div class="relative">
+                        <select id="agent-name" class="block appearance-none w-full bg-gray-50 border border-gray-300 text-gray-700 py-2 px-3 pr-8 rounded-lg leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            <option value="playwright-agent" selected>Playwright Agent</option>
+                            <option value="research-agent">Research Agent</option>
+                            <option value="data-agent">Data Analysis Agent</option>
+                        </select>
+                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mb-6">
+                    <label class="block text-gray-700 text-sm font-medium mb-2" for="model">
+                        Model
+                    </label>
+                    <div class="relative">
+                        <select id="model" class="block appearance-none w-full bg-gray-50 border border-gray-300 text-gray-700 py-2 px-3 pr-8 rounded-lg leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            <option value="gpt-4.1" selected>GPT-4.1</option>
+                            <option value="gpt-4">GPT-4</option>
+                            <option value="gpt-3.5">GPT-3.5</option>
+                        </select>
+                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mb-6">
+                    <label class="block text-gray-700 text-sm font-medium mb-2" for="instructions">
+                        Instructions
+                    </label>
+                    <textarea id="instructions" rows="3" class="block w-full bg-gray-50 border border-gray-300 text-gray-700 py-2 px-3 rounded-lg leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">use the tool to respond</textarea>
+                </div>
+                
+                <div class="mb-6">
+                    <label class="block text-gray-700 text-sm font-medium mb-2" for="query">
+                        Your Query
+                    </label>
+                    <textarea id="query" rows="4" class="block w-full bg-gray-50 border border-gray-300 text-gray-700 py-2 px-3 rounded-lg leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="What would you like the agent to do?"></textarea>
+                </div>
+                
+                <div class="flex flex-col space-y-3">
+                    <button id="execute-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition duration-150 ease-in-out flex items-center justify-center">
+                        <i class="fas fa-play mr-2"></i> Execute Query
+                    </button>
+                    <button id="execute-stream-btn" class="bg-blue-100 hover:bg-blue-200 text-blue-800 font-medium py-2 px-4 rounded-lg transition duration-150 ease-in-out flex items-center justify-center">
+                        <i class="fas fa-stream mr-2"></i> Stream Execution
+                    </button>
+                    <button id="clear-btn" class="bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium py-2 px-4 rounded-lg transition duration-150 ease-in-out">
+                        <i class="fas fa-trash-alt mr-2"></i> Clear Results
+                    </button>
+                </div>
+                
+                <div class="mt-6 pt-4 border-t border-gray-200">
+                    <h3 class="text-sm font-medium text-gray-500 mb-2">Example Queries</h3>
+                    <div class="space-y-2">
+                        <button class="example-query text-left w-full text-sm bg-gray-50 hover:bg-gray-100 text-gray-700 py-2 px-3 rounded-lg transition duration-150 ease-in-out">
+                            "Search for the latest news about AI advancements"
+                        </button>
+                        <button class="example-query text-left w-full text-sm bg-gray-50 hover:bg-gray-100 text-gray-700 py-2 px-3 rounded-lg transition duration-150 ease-in-out">
+                            "Find the current weather in New York"
+                        </button>
+                        <button class="example-query text-left w-full text-sm bg-gray-50 hover:bg-gray-100 text-gray-700 py-2 px-3 rounded-lg transition duration-150 ease-in-out">
+                            "Look up the price of Microsoft stock"
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Right Panel - Results -->
+            <div class="lg:col-span-2 space-y-6">
+                <!-- Execution Status -->
+                <div class="bg-white rounded-xl shadow-md p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-xl font-semibold text-gray-800">Execution Status</h2>
+                        <div id="status-indicator" class="flex items-center">
+                            <span class="text-sm font-medium text-gray-500">Ready</span>
+                        </div>
+                    </div>
+                    
+                    <div id="event-stream" class="event-stream bg-gray-50 rounded-lg p-4 font-mono text-sm">
+                        <div class="text-gray-500">Waiting for execution...</div>
+                    </div>
+                </div>
+                
+                <!-- Results Display -->
+                <div class="bg-white rounded-xl shadow-md p-6">
+                    <h2 class="text-xl font-semibold text-gray-800 mb-4">Agent Response</h2>
+                    
+                    <div id="results-container">
+                        <div id="agent-response" class="prose max-w-none">
+                            <div class="text-gray-500 italic">No results yet. Execute a query to see the agent's response.</div>
+                        </div>
+                        
+                        <div id="citations-container" class="mt-6 pt-4 border-t border-gray-200 hidden">
+                            <h3 class="text-lg font-medium text-gray-800 mb-3">Citations</h3>
+                            <div id="citations-list" class="space-y-2"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Execution Details -->
+                <div class="bg-white rounded-xl shadow-md p-6">
+                    <h2 class="text-xl font-semibold text-gray-800 mb-4">Execution Details</h2>
+                    
+                    <div id="execution-details" class="space-y-4">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="bg-gray-50 p-3 rounded-lg">
+                                <div class="text-xs text-gray-500 mb-1">Run ID</div>
+                                <div id="run-id" class="text-sm font-medium text-gray-800 truncate">-</div>
+                            </div>
+                            <div class="bg-gray-50 p-3 rounded-lg">
+                                <div class="text-xs text-gray-500 mb-1">Agent ID</div>
+                                <div id="agent-id" class="text-sm font-medium text-gray-800 truncate">-</div>
+                            </div>
+                            <div class="bg-gray-50 p-3 rounded-lg">
+                                <div class="text-xs text-gray-500 mb-1">Thread ID</div>
+                                <div id="thread-id" class="text-sm font-medium text-gray-800 truncate">-</div>
+                            </div>
+                        </div>
+                        
+                        <div id="steps-container" class="hidden">
+                            <h3 class="text-lg font-medium text-gray-800 mb-3">Execution Steps</h3>
+                            <div id="steps-list" class="space-y-2"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <footer class="mt-12 pt-6 border-t border-gray-200 text-center text-gray-500 text-sm">
+            <p>Azure AI Agents Playground - Powered by FastAPI and Azure AI Services</p>
+            <p class="mt-1">API Endpoint: <span class="font-mono">/query</span> and <span class="font-mono">/query/stream</span></p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // DOM Elements
+            const executeBtn = document.getElementById('execute-btn');
+            const executeStreamBtn = document.getElementById('execute-stream-btn');
+            const clearBtn = document.getElementById('clear-btn');
+            const exampleQueries = document.querySelectorAll('.example-query');
+            const eventStream = document.getElementById('event-stream');
+            const agentResponse = document.getElementById('agent-response');
+            const citationsContainer = document.getElementById('citations-container');
+            const citationsList = document.getElementById('citations-list');
+            const runIdElement = document.getElementById('run-id');
+            const agentIdElement = document.getElementById('agent-id');
+            const threadIdElement = document.getElementById('thread-id');
+            const stepsContainer = document.getElementById('steps-container');
+            const stepsList = document.getElementById('steps-list');
+            const statusIndicator = document.getElementById('status-indicator');
+            
+            // API Configuration
+            const API_BASE_URL = window.location.origin.includes('localhost') 
+                ? 'http://localhost:8000' 
+                : window.location.origin;
+            
+            // Event Listeners
+            executeBtn.addEventListener('click', executeQuery);
+            executeStreamBtn.addEventListener('click', executeQueryStream);
+            clearBtn.addEventListener('click', clearResults);
+            exampleQueries.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.getElementById('query').value = this.textContent.trim();
+                });
+            });
+            
+            // Functions
+            function updateStatus(status, isError = false) {
+                const colors = {
+                    'processing': 'text-blue-600',
+                    'success': 'text-green-600',
+                    'error': 'text-red-600',
+                    'ready': 'text-gray-500'
+                };
+                
+                const icons = {
+                    'processing': 'fa-spinner fa-spin',
+                    'success': 'fa-check-circle',
+                    'error': 'fa-exclamation-circle',
+                    'ready': 'fa-circle'
+                };
+                
+                const color = isError ? colors.error : colors[status.toLowerCase()] || colors.ready;
+                const icon = isError ? icons.error : icons[status.toLowerCase()] || icons.ready;
+                
+                statusIndicator.innerHTML = `
+                    <i class="fas ${icon} mr-2 ${color}"></i>
+                    <span class="text-sm font-medium ${color}">${status}</span>
+                `;
+            }
+            
+            function addEventToStream(event) {
+                const eventElement = document.createElement('div');
+                eventElement.className = 'mb-2';
+                
+                const timestamp = new Date(event.timestamp).toLocaleTimeString();
+                let eventContent = '';
+                
+                switch(event.event_type) {
+                    case 'connection_setup':
+                        eventContent = `<span class="text-blue-600">[${timestamp}]</span> Setting up Playwright connection...`;
+                        break;
+                    case 'connection_ready':
+                        eventContent = `<span class="text-blue-600">[${timestamp}]</span> Playwright connection established (ID: ${event.data.connection_id})`;
+                        break;
+                    case 'agent_creation':
+                        eventContent = `<span class="text-blue-600">[${timestamp}]</span> Creating agent instance...`;
+                        break;
+                    case 'agent_created':
+                        eventContent = `<span class="text-green-600">[${timestamp}]</span> Agent created (ID: ${event.data.agent_id})`;
+                        agentIdElement.textContent = event.data.agent_id;
+                        break;
+                    case 'thread_creation':
+                        eventContent = `<span class="text-blue-600">[${timestamp}]</span> Creating conversation thread...`;
+                        break;
+                    case 'thread_created':
+                        eventContent = `<span class="text-green-600">[${timestamp}]</span> Thread created (ID: ${event.data.thread_id})`;
+                        threadIdElement.textContent = event.data.thread_id;
+                        break;
+                    case 'message_creation':
+                        eventContent = `<span class="text-blue-600">[${timestamp}]</span> Creating user message: "${event.data.content}"`;
+                        break;
+                    case 'message_created':
+                        eventContent = `<span class="text-green-600">[${timestamp}]</span> Message added to thread (ID: ${event.data.message_id})`;
+                        break;
+                    case 'run_creation':
+                        eventContent = `<span class="text-blue-600">[${timestamp}]</span> Creating and processing run...`;
+                        break;
+                    case 'run_created':
+                        eventContent = `<span class="text-green-600">[${timestamp}]</span> Run created (ID: ${event.data.run_id})`;
+                        runIdElement.textContent = event.data.run_id;
+                        break;
+                    case 'run_processing':
+                        eventContent = `<span class="text-blue-600">[${timestamp}]</span> Processing run (ID: ${event.data.run_id})`;
+                        updateStatus('Processing');
+                        break;
+                    case 'run_completed':
+                        eventContent = `<span class="text-green-600">[${timestamp}]</span> Run completed with status: ${event.data.status}`;
+                        updateStatus('Completed');
+                        break;
+                    case 'run_error':
+                        eventContent = `<span class="text-red-600">[${timestamp}]</span> Run failed: ${event.data.error}`;
+                        updateStatus('Error', true);
+                        break;
+                    case 'steps_retrieval':
+                        eventContent = `<span class="text-blue-600">[${timestamp}]</span> Retrieving run steps...`;
+                        break;
+                    case 'step_processed':
+                        eventContent = `<span class="text-blue-600">[${timestamp}]</span> Step processed: ${event.step_id} (Status: ${event.status})`;
+                        addStepToDetails(event);
+                        break;
+                    case 'response_retrieval':
+                        eventContent = `<span class="text-blue-600">[${timestamp}]</span> Retrieving agent response...`;
+                        break;
+                    case 'response_ready':
+                        eventContent = `<span class="text-green-600">[${timestamp}]</span> Response ready`;
+                        displayResponse(event.data);
+                        break;
+                    case 'cleanup':
+                        eventContent = `<span class="text-blue-600">[${timestamp}]</span> Cleaning up resources...`;
+                        break;
+                    case 'cleanup_complete':
+                        eventContent = `<span class="text-green-600">[${timestamp}]</span> Cleanup complete`;
+                        break;
+                    case 'completed':
+                        eventContent = `<span class="text-green-600">[${timestamp}]</span> Execution completed successfully`;
+                        updateStatus('Completed');
+                        break;
+                    case 'error':
+                        eventContent = `<span class="text-red-600">[${timestamp}]</span> Error: ${event.data.error_message}`;
+                        updateStatus('Error', true);
+                        break;
+                    default:
+                        eventContent = `<span class="text-gray-600">[${timestamp}]</span> ${event.event_type}: ${JSON.stringify(event.data)}`;
+                }
+                
+                eventElement.innerHTML = eventContent;
+                eventStream.appendChild(eventElement);
+                eventStream.scrollTop = eventStream.scrollHeight;
+            }
+            
+            function addStepToDetails(step) {
+                stepsContainer.classList.remove('hidden');
+                
+                const stepElement = document.createElement('div');
+                stepElement.className = 'bg-gray-50 p-3 rounded-lg';
+                
+                let toolCallsContent = '';
+                if (step.tool_calls && step.tool_calls.length > 0) {
+                    toolCallsContent = step.tool_calls.map(tool => `
+                        <div class="ml-4 mt-2 text-sm">
+                            <div class="font-medium">Tool Call: ${tool.function_name || 'Unknown'}</div>
+                            <div class="text-gray-600">Type: ${tool.type}</div>
+                            <div class="text-gray-500 text-xs">ID: ${tool.call_id}</div>
+                        </div>
+                    `).join('');
+                }
+                
+                stepElement.innerHTML = `
+                    <div class="flex justify-between items-center">
+                        <div class="font-medium">Step ${stepsList.children.length + 1}</div>
+                        <span class="text-xs px-2 py-1 rounded-full ${step.status === 'completed' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'}">
+                            ${step.status}
+                        </span>
+                    </div>
+                    <div class="text-xs text-gray-500 mt-1">ID: ${step.step_id}</div>
+                    ${toolCallsContent}
+                `;
+                
+                stepsList.appendChild(stepElement);
+            }
+            
+            function displayResponse(responseData) {
+                // Clear previous response
+                agentResponse.innerHTML = '';
+                
+                // Configure marked.js
+                marked.setOptions({
+                    breaks: true,
+                    highlight: function(code, lang) {
+                        const language = hljs.getLanguage(lang) ? lang : 'plaintext';
+                        return hljs.highlight(code, { language }).value;
+                    }
+                });
+                
+                // Display text messages as markdown
+                if (responseData.text_messages && responseData.text_messages.length > 0) {
+                    const combinedText = responseData.text_messages.join('\n\n');
+                    agentResponse.innerHTML = marked.parse(combinedText);
+                    
+                    // Apply syntax highlighting
+                    document.querySelectorAll('pre code').forEach((block) => {
+                        hljs.highlightElement(block);
+                    });
+                }
+                
+                // Display citations if available
+                if (responseData.citations && responseData.citations.length > 0) {
+                    citationsContainer.classList.remove('hidden');
+                    citationsList.innerHTML = '';
+                    
+                    responseData.citations.forEach(citation => {
+                        const citationElement = document.createElement('div');
+                        citationElement.className = 'citation-bubble';
+                        citationElement.innerHTML = `
+                            <div class="font-medium">${citation.title || 'Untitled'}</div>
+                            <a href="${citation.url}" target="_blank" class="text-blue-600 text-sm break-all">${citation.url}</a>
+                        `;
+                        citationsList.appendChild(citationElement);
+                    });
+                } else {
+                    citationsContainer.classList.add('hidden');
+                }
+            }
+            
+            function clearResults() {
+                eventStream.innerHTML = '<div class="text-gray-500">Waiting for execution...</div>';
+                agentResponse.innerHTML = '<div class="text-gray-500 italic">No results yet. Execute a query to see the agent\'s response.</div>';
+                citationsContainer.classList.add('hidden');
+                runIdElement.textContent = '-';
+                agentIdElement.textContent = '-';
+                threadIdElement.textContent = '-';
+                stepsContainer.classList.add('hidden');
+                stepsList.innerHTML = '';
+                updateStatus('Ready');
+            }
+            
+            async function executeQuery() {
+                const query = document.getElementById('query').value.trim();
+                const agentName = document.getElementById('agent-name').value;
+                const model = document.getElementById('model').value;
+                const instructions = document.getElementById('instructions').value;
+                
+                if (!query) {
+                    alert('Please enter a query');
+                    return;
+                }
+                
+                clearResults();
+                updateStatus('Processing');
+                eventStream.innerHTML = '<div class="text-blue-600">Starting non-streaming execution...</div>';
+                
+                try {
+                    const response = await fetch(`${API_BASE_URL}/query`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            message: query,
+                            model: model,
+                            agent_name: agentName,
+                            instructions: instructions
+                        })
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    
+                    const data = await response.json();
+                    
+                    // Simulate events for non-streaming response
+                    addEventToStream({
+                        timestamp: new Date().toISOString(),
+                        event_type: 'agent_created',
+                        data: { agent_id: data.agent_id }
+                    });
+                    
+                    addEventToStream({
+                        timestamp: new Date().toISOString(),
+                        event_type: 'thread_created',
+                        data: { thread_id: data.thread_id }
+                    });
+                    
+                    addEventToStream({
+                        timestamp: new Date().toISOString(),
+                        event_type: 'run_created',
+                        data: { run_id: data.run_id }
+                    });
+                    
+                    if (data.status === 'failed') {
+                        addEventToStream({
+                            timestamp: new Date().toISOString(),
+                            event_type: 'run_error',
+                            data: { error: data.error }
+                        });
+                    } else {
+                        addEventToStream({
+                            timestamp: new Date().toISOString(),
+                            event_type: 'run_completed',
+                            data: { status: data.status }
+                        });
+                        
+                        // Add steps
+                        if (data.steps && data.steps.length > 0) {
+                            addEventToStream({
+                                timestamp: new Date().toISOString(),
+                                event_type: 'steps_retrieval',
+                                data: {}
+                            });
+                            
+                            data.steps.forEach(step => {
+                                addEventToStream({
+                                    timestamp: new Date().toISOString(),
+                                    event_type: 'step_processed',
+                                    ...step
+                                });
+                            });
+                        }
+                        
+                        // Display response
+                        if (data.response) {
+                            addEventToStream({
+                                timestamp: new Date().toISOString(),
+                                event_type: 'response_ready',
+                                data: data.response
+                            });
+                        }
+                    }
+                    
+                    addEventToStream({
+                        timestamp: new Date().toISOString(),
+                        event_type: 'completed',
+                        data: { status: 'success' }
+                    });
+                    
+                    updateStatus('Completed');
+                } catch (error) {
+                    addEventToStream({
+                        timestamp: new Date().toISOString(),
+                        event_type: 'error',
+                        data: {
+                            error_type: 'API Error',
+                            error_message: error.message
+                        }
+                    });
+                    updateStatus('Error', true);
+                    console.error('Error executing query:', error);
+                }
+            }
+            
+            async function executeQueryStream() {
+                const query = document.getElementById('query').value.trim();
+                const agentName = document.getElementById('agent-name').value;
+                const model = document.getElementById('model').value;
+                const instructions = document.getElementById('instructions').value;
+                
+                if (!query) {
+                    alert('Please enter a query');
+                    return;
+                }
+                
+                clearResults();
+                updateStatus('Processing');
+                eventStream.innerHTML = '<div class="text-blue-600">Starting streaming execution...</div>';
+                
+                try {
+                    const response = await fetch(`${API_BASE_URL}/query/stream`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            message: query,
+                            model: model,
+                            agent_name: agentName,
+                            instructions: instructions
+                        })
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    
+                    // Handle streaming response
+                    const reader = response.body.getReader();
+                    const decoder = new TextDecoder();
+                    let buffer = '';
+                    
+                    while (true) {
+                        const { done, value } = await reader.read();
+                        if (done) break;
+                        
+                        buffer += decoder.decode(value, { stream: true });
+                        
+                        // Process each complete event (separated by double newlines)
+                        const events = buffer.split('\n\n');
+                        buffer = events.pop(); // Save incomplete event for next iteration
+                        
+                        for (const event of events) {
+                            if (event.startsWith('data: ')) {
+                                try {
+                                    const eventData = JSON.parse(event.substring(6));
+                                    addEventToStream(eventData);
+                                } catch (e) {
+                                    console.error('Error parsing event:', e);
+                                }
+                            }
+                        }
+                    }
+                } catch (error) {
+                    addEventToStream({
+                        timestamp: new Date().toISOString(),
+                        event_type: 'error',
+                        data: {
+                            error_type: 'API Error',
+                            error_message: error.message
+                        }
+                    });
+                    updateStatus('Error', true);
+                    console.error('Error executing streaming query:', error);
+                }
+            }
+            
+            // Initialize
+            clearResults();
+        });
+    </script>
+</body>
+</html>
