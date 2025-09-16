@@ -25,6 +25,7 @@ A Chainlit-based chat interface that connects to Azure OpenAI API with support f
    AZURE_OPENAI_ENDPOINT=your_endpoint_here
    AZURE_OPENAI_API_KEY=your_api_key_here
    AZURE_OPENAI_MODEL=your_deployment_name_here
+   OPENAI_API_VERSION=your_openai_api_version_here
    ```
 
 ## Usage
