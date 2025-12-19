@@ -8,3 +8,7 @@ Use the samples in this repository to try out Azure AI scenarios on your local m
 ## Star History
 
 [![Star History Chart](https://api.star-history.com/svg?repos=monuminu/AOAI_Samples&type=Date)](https://star-history.com/#monuminu/AOAI_Samples&Date)
+
+
+
+https://www.perplexity.ai/search/you-are-a-technical-evaluator-CeMsn9tNTFGv_f2GoonJNg#0
