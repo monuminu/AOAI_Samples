@@ -12,3 +12,4 @@ Use the samples in this repository to try out Azure AI scenarios on your local m
 
 
 https://www.perplexity.ai/search/you-are-a-technical-evaluator-CeMsn9tNTFGv_f2GoonJNg#0
+https://www.perplexity.ai/search/you-are-a-technical-evaluator-Y10B4Gf6QsmfbCCTFCPUoA
